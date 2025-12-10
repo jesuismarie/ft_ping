@@ -1,0 +1,5 @@
+.vscode
+ft_ping
+*.o
+*.a
+build
