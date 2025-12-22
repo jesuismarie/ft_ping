@@ -1,14 +1,14 @@
 NAME		= ft_ping
 
 BUILD		= ./build
-SRCS_DIR		= ./srcs
+SRCS_DIR	= ./srcs
+HEADERS_DIR	= ./includes
 
 SRCS		= $(shell find $(SRCS_DIR) -name '*.c')
 OBJS		= $(patsubst $(SRCS_DIR)/%.c, $(BUILD)/%.o, $(SRCS))
-
-HEADERS_DIR	= ./includes
 HEADERS		= $(shell find $(HEADERS_DIR) -name '*.h')
 
+CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
 INC_DIR		= -I$(HEADERS_DIR)
 LDFLAGS		= -lresolv
@@ -21,26 +21,28 @@ APPLE_GREEN	= \033[38;2;141;182;0m
 
 all:			build $(NAME)
 
+$(NAME):		$(OBJS)
+			@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LDFLAGS)
+			@echo "${YELLOW}ft_ping created 🥑 ${RESET}"
+
+debug:			CFLAGS += $(DEBUG_MODE)
+debug:			build $(NAME)
+
 $(BUILD)/%.o:	$(SRCS_DIR)/%.c $(HEADERS) Makefile
 			@echo "${APPLE_GREEN} Compiling $<${RESET}"
 			@$(CC) $(CFLAGS) $(INC_DIR) -c $< -o $@
-
-${NAME}:		${OBJS}
-			@$(CC) $(CFLAGS) $(OBJS) $(INC_DIR) -o ${NAME} $(LDFLAGS)
-			@echo "${YELLOW}ft_ping created 🥑 ${RESET}"
 
 build:
 			@mkdir -p $(BUILD)
 
 clean:
-			@echo "${BLUE}Object files removed ${RESET}"
 			@rm -rf $(BUILD)
+			@echo "${BLUE}Object files removed ${RESET}"
 
 fclean:			clean
-			@echo "${BLUE}ft_ping removed ${RESET}"
+			@rm -f $(NAME)
 			@echo "${BLUE}Everything is clean now! 🧹${RESET}"
-			@rm -f ${NAME}
 
 re:			fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re build debug
